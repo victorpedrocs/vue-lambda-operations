@@ -1,81 +1,73 @@
-# Turborepo starter
+# Loanpro assignment
 
-This is an official starter Turborepo.
+This monoreopo contains the implementation of server and ui for the loanpro code challenge
 
-## Using this example
+## Live version
 
-Run the following command:
+The frontend is deployed to AWS using Amplify, and the backend is deployed on Lambda using serverless.
 
-```sh
-npx create-turbo@latest
-```
+Here is the link to the app: https://d3rao4du2a4sse.cloudfront.net
 
-## What's inside?
+## Local development
 
-This Turborepo includes the following packages/apps:
+This repo uses turborepo to manage the subpackages `web` for the UI, and `api` for the backend. Here as the instructions to run them locally:
 
-### Apps and Packages
+1. Make a copy of the `.env.sample` file to `.env`, and populate the missing values with your own keys
+1. Run `yarn migrate` to perform the database migration.
+1. Run `yarn dev` in the root folder
+   1. It will spin up the docker container for the database
+   1. And it will run both `web` and `api` servers.
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `ui`: a stub React component library shared by both `web` and `docs` applications
-- `eslint-config-custom`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `tsconfig`: `tsconfig.json`s used throughout the monorepo
+These are the environment variables:
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+## var | description | default value
 
-### Utilities
+| Variable              | Description                                  | Default Value                                        |
+| --------------------- | -------------------------------------------- | ---------------------------------------------------- |
+| AWS_ACCESS_KEY_ID     | AWS access key id                            | -                                                    |
+| AWS_SECRET_ACCESS_KEY | AWS secret access key                        | -                                                    |
+| PG_CONN_URL           | The connection string to the postgres server | postgres://postgres:postgres@localhost:5432/postgres |
+| RANDOM_KEY            | The api key for the Random.org api           | -                                                    |
+| RANDOM_ADDRESS        | The url address for the Random.org api       | https://api.random.org/json-rpc/4/invoke             |
+| VITE_API_URL=         | The url address to the backend api           | http://localhost:3000                                |
 
-This Turborepo has some additional tools already setup for you:
+## Testing
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+I have written integration tests for all api endpoints using vitest.
 
-### Build
+Although I haven't written unit tests, on my current project we do 100% test coverage on the api, and focus on e2e tests suites using playwright.
 
-To build all apps and packages, run the following command:
+Some cases I would consider very important to write unit tests are pieces of code which contain a lot of logic steps, like the `record.store.ts` in the `web` package, and the `controller/records/postRecord.ts` controller, in the `api` package, responsible for creating a new operation record.
 
-```
-cd my-turborepo
-pnpm build
-```
+## Deployment
 
-### Develop
+The deployment was done manually in two steps:
 
-To develop all apps and packages, run the following command:
+1. In the `api` package
+   1. make sure the environment variables are setup correctly, pointing to the live environments, follow the `.env.sample` file, the same way it was done in the root package.
+   1. run `yarn sls:deploy` to deploy the serverless api.
 
-```
-cd my-turborepo
-pnpm dev
-```
+### Infrastructure
 
-### Remote Caching
+This is the stack used for the API:
 
-Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+- Serverless framework to implement the lambda infrastructure
+  - It uses the `esbuild` and `offline` plugins to build the typescript code and run the lambda locally, respectively.
+  - Express as the rest server library
+  - Drizzle as ORM, for it's simplicity and ease to work with
+  - Render.com as postgres host, because of it's simplicity to spin up, opposed to RDS, where it's needed to setup networking and a VPC for the lambda to able to communicate with it.
+- The UI is implemented in Vue.js
+  - Vite for the application scaffolding and build.
+  - Element plus as the UI components library
+  - Pinia as store for vue
+  - AWS Amplify for hosting
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup), then enter the following commands:
+Given it was my first experience with Vue.js, it's probable that I'm missing some good practices involving the vue ecosystem. In any case, I really enjoyed learning vue.
 
-```
-cd my-turborepo
-npx turbo login
-```
+## Development
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+### Database
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+The database schema is defined in `api/src/repository/schema.ts`. The drizzle schema is used for generating the migrations and build queries.
 
-```
-npx turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
-- [Caching](https://turbo.build/repo/docs/core-concepts/caching)
-- [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
-- [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
-- [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
-- [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
+The migrations are automatically generated based on the changes in the schema, and it can be done by running `yarn db:gen` in the `api/` folder.

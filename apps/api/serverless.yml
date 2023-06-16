@@ -1,0 +1,22 @@
+service: server
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  httpApi:
+    cors: true
+
+  environment:
+    PG_CONN_URL: ${env:PG_CONN_URL}
+    RANDOM_KEY: ${env:RANDOM_KEY}
+    RANDOM_ADDRESS: ${env:RANDOM_ADDRESS}
+functions:
+  api:
+    handler: index.handler
+    events:
+      - httpApi: '*'
+
+plugins:
+  - serverless-esbuild
+  - serverless-offline
