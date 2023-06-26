@@ -33,3 +33,8 @@ export type QueryRecordsParams = {
   orderBy?: 'amount' | 'userBalance' | 'dateTime' | 'type';
   sortingOrder?: 'asc' | 'desc';
 };
+
+export type SignInFormType = {
+  username: string;
+  password: string;
+};

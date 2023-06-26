@@ -5,6 +5,7 @@ import { NewRecordType, RecordType, UserType } from '../src/repository/types';
 import { InitialBalance } from '../src/helpers/const';
 import { db } from '../src/repository/databaseClient';
 import { RecordModel } from '../src/repository/schema';
+import { vi } from 'vitest';
 
 export type AuthResponseBody = Omit<UserType, 'password'> & {
   token: string;
@@ -51,3 +52,9 @@ export async function createRecords(
   const records = await db.insert(RecordModel).values(newRecords).returning();
   return records;
 }
+
+export const mockResponse = {
+  status: vi.fn().mockReturnThis(),
+  send: vi.fn().mockReturnThis(),
+  json: vi.fn().mockReturnThis(),
+};

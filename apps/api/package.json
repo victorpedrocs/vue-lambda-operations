@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "dev": "sls offline | pino-pretty",
+    "dev": "sls offline --reloadHandler | pino-pretty",
     "sls:start": "dotenv sls offline start | pino-pretty",
     "sls:deploy": "dotenv sls deploy",
     "test": "vitest run",

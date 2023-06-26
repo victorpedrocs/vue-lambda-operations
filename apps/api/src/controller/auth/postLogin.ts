@@ -9,7 +9,7 @@ export const login: RequestHandler = async (req, res) => {
   const user = await getUser(username, await getHash(password));
 
   if (!user) {
-    return res.status(400).send(new Error('Invalid user credentials'));
+    return res.status(400).send({ message: 'Invalid user credentials' });
   }
 
   res.status(200).send({

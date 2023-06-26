@@ -23,6 +23,6 @@ export const signup: RequestHandler = async (req, res) => {
     }
 
     req.log.error({ err }, 'Failed to signup user');
-    return res.status(500).send(new Error('Failed to create user'));
+    return res.status(500).send({ message: 'Failed to create user' });
   }
 };
