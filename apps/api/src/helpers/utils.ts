@@ -40,3 +40,22 @@ export function getUserToken(user: UserType) {
   };
   return sign(tokenPayload, jwtSecret);
 }
+
+export function corsHeaders(_req: Request, res: Response, next: NextFunction) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept',
+  );
+  next();
+}
+export function optionsHandler(_req: Request, res: Response, _next: any) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Content-Type, Authorization, Content-Length, X-Requested-With',
+  );
+  res.send(200);
+}

@@ -5,6 +5,7 @@ import { notFoundHandler } from './src/middleware/notFoundHandler';
 import { errorHandler } from './src/middleware/errorHandler';
 import v1Router from './src/routes/v1';
 import { log } from './src/helpers/logger';
+import { corsHeaders, optionsHandler } from './src/helpers/utils';
 
 const app = express();
 
@@ -16,6 +17,8 @@ app.use(
     logger: log,
   }),
 );
+app.use(corsHeaders);
+app.options('/*', optionsHandler);
 
 // Routes
 app.use('/v1', v1Router);

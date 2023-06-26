@@ -8,6 +8,8 @@ The frontend is deployed to AWS using Amplify, and the backend is deployed on La
 
 Here is the link to the app: https://d3rao4du2a4sse.cloudfront.net
 
+Use the `test/test` credentials for a user with a large list of records, or create a new user user going to the sign up page.
+
 ## Local development
 
 This repo uses turborepo to manage the subpackages `web` for the UI, and `api` for the backend. Here as the instructions to run them locally:
@@ -35,9 +37,7 @@ These are the environment variables:
 
 I have written integration tests for all api endpoints using vitest.
 
-Although I haven't written unit tests, on my current project we do 100% test coverage on the api, and focus on e2e tests suites using playwright.
-
-Some cases I would consider very important to write unit tests are pieces of code which contain a lot of logic steps, like the `record.store.ts` in the `web` package, and the `controller/records/postRecord.ts` controller, in the `api` package, responsible for creating a new operation record.
+I have also written some unit tests in the `api` package to showcase testing with unit tests in the backend.
 
 ## Deployment
 
@@ -46,6 +46,9 @@ The deployment was done manually in two steps:
 1. In the `api` package
    1. make sure the environment variables are setup correctly, pointing to the live environments, follow the `.env.sample` file, the same way it was done in the root package.
    1. run `yarn sls:deploy` to deploy the serverless api.
+1. In the `web` package
+   1. make sure the environment variables are correctly set up, pointing to the live api.
+   1. run `yarn deploy` to deploy the front end app using amplify.
 
 ### Infrastructure
 
